@@ -14,116 +14,119 @@
             justify-content: center;
             padding: 20px;
         }
-        .container {
-            width: 100%;
-            max-width: 680px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .header h1 {
-            font-size: 28px;
-            font-weight: 600;
-            color: #ffffff;
-            letter-spacing: -0.5px;
-        }
-        .header p {
-            color: #666;
-            font-size: 14px;
-            margin-top: 6px;
-        }
-        .card {
+        .container { width: 100%; max-width: 680px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 28px; font-weight: 600; color: #ffffff; }
+        .header p { color: #666; font-size: 14px; margin-top: 6px; }
+        .chat-box {
             background: #1a1a24;
             border: 1px solid #2a2a38;
             border-radius: 16px;
-            padding: 28px;
+            padding: 20px;
+            min-height: 200px;
+            max-height: 450px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+        .message { margin-bottom: 16px; }
+        .message.user .bubble {
+            background: #6C63FF;
+            color: white;
+            border-radius: 12px 12px 2px 12px;
+            padding: 12px 16px;
+            display: inline-block;
+            max-width: 85%;
+            float: right;
+            clear: both;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .message.assistant .bubble {
+            background: #0f0f13;
+            color: #c8c8d8;
+            border: 1px solid #2a2a38;
+            border-radius: 12px 12px 12px 2px;
+            padding: 12px 16px;
+            display: inline-block;
+            max-width: 85%;
+            float: left;
+            clear: both;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .clearfix { clear: both; }
+        .input-area {
+            background: #1a1a24;
+            border: 1px solid #2a2a38;
+            border-radius: 16px;
+            padding: 16px;
         }
         textarea {
             width: 100%;
-            height: 120px;
+            height: 80px;
             background: #0f0f13;
             border: 1px solid #2a2a38;
             border-radius: 10px;
             color: #e8e8e8;
-            font-size: 15px;
-            padding: 14px;
+            font-size: 14px;
+            padding: 12px;
             resize: none;
             outline: none;
             font-family: 'Segoe UI', Arial, sans-serif;
             transition: border 0.2s;
         }
-        textarea:focus {
-            border-color: #6C63FF;
-        }
-        textarea::placeholder {
-            color: #444;
-        }
+        textarea:focus { border-color: #6C63FF; }
+        textarea::placeholder { color: #444; }
+        .buttons { display: flex; gap: 10px; margin-top: 10px; }
         button {
-            width: 100%;
+            flex: 1;
             background: #6C63FF;
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 14px;
-            font-size: 15px;
+            padding: 12px;
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            margin-top: 12px;
             transition: background 0.2s;
-            letter-spacing: 0.3px;
         }
-        button:hover {
-            background: #5a52e0;
-        }
-        .answer-box {
-            margin-top: 24px;
-            background: #0f0f13;
+        button:hover { background: #5a52e0; }
+        .clear-btn {
+            background: transparent;
             border: 1px solid #2a2a38;
-            border-radius: 10px;
-            padding: 20px;
+            color: #666;
+            flex: 0.3;
         }
-        .answer-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: #6C63FF;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        .answer-text {
-            font-size: 15px;
-            color: #c8c8d8;
-            line-height: 1.8;
-        }
-        .dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #6C63FF;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
+        .clear-btn:hover { background: #1a1a24; color: #999; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>AI Assistant</h1>
-            <p>Powered by Llama 3.3 · Ask me anything</p>
+            <p>Powered by Llama 3.3 · Remembers your conversation</p>
         </div>
-        <div class="card">
-            <form action="/ask" method="POST">
-                <textarea name="question" placeholder="Type your question here..."></textarea>
-                <button type="submit">Ask AI</button>
-            </form>
-            {% if answer %}
-            <div class="answer-box">
-                <div class="answer-label"><span class="dot"></span>Answer</div>
-                <div class="answer-text">{{ answer }}</div>
+        <div class="chat-box" id="chatbox">
+            {% for msg in messages %}
+            <div class="message {{ msg.role }}">
+                <div class="bubble">{{ msg.content }}</div>
+                <div class="clearfix"></div>
             </div>
-            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="input-area">
+            <form action="/ask" method="POST">
+                <textarea name="question" placeholder="Type your message..." required></textarea>
+                <div class="buttons">
+                    <button type="submit">Send</button>
+                    <a href="/"><button type="button" class="clear-btn">Clear</button></a>
+                </div>
+            </form>
         </div>
     </div>
+    <script>
+        var chatbox = document.getElementById('chatbox');
+        chatbox.scrollTop = chatbox.scrollHeight;
+    </script>
 </body>
 </html>
